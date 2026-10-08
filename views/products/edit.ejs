@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title><%= title %></title><link rel="stylesheet" href="/styles.css"></head>
+<body><main class="container narrow">
+  <div class="heading"><h1><%= title %></h1><a href="/products">← Danh sách</a></div>
+  <%- include('_form', { action: `/products/edit/${product._id}`, product, categories, submitLabel: 'Cập nhật' }) %>
+</main></body>
+</html>

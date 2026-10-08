@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sản phẩm từ API</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="container">
+    <div class="heading">
+      <div>
+        <p class="eyebrow">API DEMO</p>
+        <h1>Sản phẩm từ API</h1>
+      </div>
+      <a class="button secondary" href="/products">Trang quản trị</a>
+    </div>
+
+    <p id="status" class="empty">Đang tải dữ liệu...</p>
+    <section id="product-container" class="api-grid" aria-live="polite"></section>
+  </main>
+
+  <script>
+    const container = document.getElementById('product-container');
+    const status = document.getElementById('status');
+
+    async function fetchProducts() {
+      try {
+        const response = await fetch('/api/products');
+        if (!response.ok) {
+          throw new Error('Không thể lấy dữ liệu từ API.');
+        }
+
+        const result = await response.json();
+        status.hidden = true;
+
+        if (result.data.length === 0) {
+          status.hidden = false;
+          status.textContent = 'Chưa có sản phẩm. Hãy chạy npm run seed.';
+          return;
+        }
+
+        result.data.forEach((product) => {
+          const card = document.createElement('article');
+          card.className = 'api-card';
+          card.innerHTML = `
+            <p class="eyebrow">${escapeHtml(product.categoryId?.name || 'Chưa phân loại')}</p>
+            <h2>${escapeHtml(product.name)}</h2>
+            <p class="api-price">${Number(product.price).toLocaleString('vi-VN')} đ</p>
+            <p>${escapeHtml(product.description || 'Chưa có mô tả.')}</p>
+            <p class="api-stock">Tồn kho: ${product.stock}</p>
+          `;
+          container.appendChild(card);
+        });
+      } catch (error) {
+        status.hidden = false;
+        status.textContent = error.message;
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    fetchProducts();
+  </script>
+</body>
+</html>

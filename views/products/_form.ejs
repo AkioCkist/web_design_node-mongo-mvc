@@ -1,0 +1,8 @@
+<form class="product-form" method="POST" action="<%= action %>">
+  <label>Tên sản phẩm<input name="name" required value="<%= product.name || '' %>"></label>
+  <label>Giá<input type="number" name="price" min="0" step="0.01" required value="<%= product.price ?? '' %>"></label>
+  <label>Tồn kho<input type="number" name="stock" min="0" step="1" required value="<%= product.stock ?? '' %>"></label>
+  <label>Danh mục<select name="categoryId" required><option value="">Chọn danh mục</option><% categories.forEach((category) => { %><option value="<%= category._id %>" <%= product.categoryId && String(product.categoryId._id || product.categoryId) === String(category._id) ? 'selected' : '' %>><%= category.name %></option><% }) %></select></label>
+  <label>Mô tả<textarea name="description" rows="5"><%= product.description || '' %></textarea></label>
+  <button class="button primary" type="submit"><%= submitLabel %></button>
+</form>

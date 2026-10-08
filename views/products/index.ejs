@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="container">
+    <div class="heading">
+      <div>
+        <p class="eyebrow">NODE MONGO MVC</p>
+        <h1><%= title %></h1>
+      </div>
+      <a class="button primary" href="/products/new">+ Thêm sản phẩm</a>
+    </div>
+
+    <form class="filters" method="GET" action="/products">
+      <label>Danh mục
+        <select name="category">
+          <option value="">Tất cả loại</option>
+          <% categories.forEach((category) => { %>
+            <option value="<%= category._id %>" <%= query.category === String(category._id) ? 'selected' : '' %>><%= category.name %></option>
+          <% }) %>
+        </select>
+      </label>
+      <label>Sắp xếp
+        <select name="sort">
+          <option value="">Mặc định</option>
+          <option value="asc" <%= query.sort === 'asc' ? 'selected' : '' %>>Giá tăng dần</option>
+          <option value="desc" <%= query.sort === 'desc' ? 'selected' : '' %>>Giá giảm dần</option>
+        </select>
+      </label>
+      <label>Giá tối đa
+        <input type="number" name="maxPrice" min="0" value="<%= query.maxPrice || '' %>" placeholder="Ví dụ: 30000">
+      </label>
+      <button class="button secondary" type="submit">Lọc</button>
+      <a class="reset" href="/products">Xóa lọc</a>
+    </form>
+
+    <% if (products.length === 0) { %>
+      <p class="empty">Không có sản phẩm phù hợp.</p>
+    <% } else { %>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tên</th><th>Giá</th><th>Loại</th><th>Tồn kho</th><th>Hành động</th></tr></thead>
+          <tbody>
+            <% products.forEach((product) => { %>
+              <tr>
+                <td><a href="/products/<%= product._id %>"><strong><%= product.name %></strong></a></td>
+                <td><%= product.price.toLocaleString('vi-VN') %> đ</td>
+                <td><%= product.categoryId ? product.categoryId.name : 'Không có' %></td>
+                <td><%= product.stock %></td>
+                <td class="actions">
+                  <a href="/products/edit/<%= product._id %>">Sửa</a>
+                  <form method="POST" action="/products/delete/<%= product._id %>" onsubmit="return confirm('Xóa sản phẩm này?')">
+                    <button class="link-danger" type="submit">Xóa</button>
+                  </form>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+
+    <% if (totalPages > 1) { %>
+      <nav class="pagination" aria-label="Phân trang">
+        <% for (let page = 1; page <= totalPages; page += 1) { %>
+          <a class="<%= page === currentPage ? 'active' : '' %>" href="/products?<%= buildQueryString(query, { page }) %>"><%= page %></a>
+        <% } %>
+      </nav>
+    <% } %>
+  </main>
+</body>
+</html>
